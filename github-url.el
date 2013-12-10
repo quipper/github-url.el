@@ -18,7 +18,7 @@
 
 (defun github-url (start end)
   (interactive "r")
-  (let ((g (github-url-decompose default-directory))
+  (let ((g (github-url-decompose (buffer-file-name)))
         rootdir file origin url start-line end-line)
     (unless g
       (error "Not managed by git: %s" default-directory))
@@ -31,6 +31,3 @@
                       origin file start-line end-line))
     (message "URL: %s" url)
     (kill-new url)))
-
-
-    
