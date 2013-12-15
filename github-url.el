@@ -29,5 +29,11 @@
     (setq end-line (line-number-at-pos end))
     (setq url (format "http://github.com/%s/blob/master/%s#L%d-L%d"
                       origin file start-line end-line))
+    
     (message "URL: %s" url)
+        (let* ((process-connection-type nil)
+           (proc (start-process "pbcopy" nil "pbcopy")))
+      (process-send-string proc url)
+      (process-send-eof proc))
+      
     (kill-new url)))
