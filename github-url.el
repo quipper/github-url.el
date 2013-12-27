@@ -6,7 +6,7 @@
                             (if partial
                                 (concat (file-name-nondirectory file) "/" partial)
                               (file-name-nondirectory file))))))
- 
+
 (defun github-url-get-origin (dir)
   (with-temp-buffer
     (insert-file-contents (expand-file-name ".git/config" dir))
@@ -17,10 +17,11 @@
              (match-string 3))))))
 
 (defun github-url-get-hash ()
+  (replace-regexp-in-string "\n$" ""
   (with-temp-buffer
     (call-process "git" nil t nil "show" "-s" "--format=format:%H")
-    (buffer-string)))
- 
+    (buffer-string))))
+
 (defun github-url (start end)
   (interactive "r")
   (let ((g (github-url-decompose (buffer-file-name)))
@@ -36,10 +37,10 @@
     (setq url (format "http://github.com/%s/blob/%s/%s#L%d-L%d"
                       origin hash file start-line end-line))
     (message "URL: %s" url)
- 
+
     (let* ((process-connection-type nil)
            (proc (start-process "pbcopy" nil "pbcopy")))
       (process-send-string proc url)
       (process-send-eof proc))
- 
+
     (kill-new url)))
