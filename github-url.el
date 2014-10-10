@@ -11,16 +11,21 @@
   (with-temp-buffer
     (insert-file-contents (expand-file-name ".git/config" dir))
     (save-match-data
+      (goto-char (point-min))
       (search-forward "[remote \"origin\"]")
-      (let ((end (save-excursion (re-search-forward "^\\[" nil 'to-end) (point))))
-        (and (re-search-forward "url *= *\\(git@\\|https://\\)github\\.com\\(/\\|:\\)\\([a-zA-Z\\/-_]*\\)\\>" end)
-             (match-string 3))))))
+      (let ((end (save-excursion
+                   (re-search-forward "^\\[" nil 'to-end)
+                   (point)))
+            (git-path (and (re-search-forward "url *= *\\(?:git@\\|https://\\)github\\.com[/:]\\(.*\\)\\>" end)
+                           (match-string 1))))
+        (replace-regexp-in-string "\\.git$" "" git-path)))))
 
 (defun github-url-get-hash ()
-  (replace-regexp-in-string "\n$" ""
-  (with-temp-buffer
-    (call-process "git" nil t nil "show" "-s" "--format=format:%H")
-    (buffer-string))))
+  (replace-regexp-in-string 
+   "\n$" ""
+   (with-temp-buffer
+     (call-process "git" nil t nil "show" "-s" "--format=format:%H")
+     (buffer-string))))
 
 (defun github-url (start end)
   (interactive "r")
